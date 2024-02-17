@@ -11,8 +11,8 @@ function Checkout() {
 
   return (
     <div>
-      <div onClick={toggleDrawer}>
-        <ShoppingCartTwoToneIcon fontSize="large" />
+      <div onClick={toggleDrawer} className="cursor-pointer">
+        <ShoppingCartTwoToneIcon fontSize="large" className="text-white" />
       </div>
       <Drawer
         anchor="right"
