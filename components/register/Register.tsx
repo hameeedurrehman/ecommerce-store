@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 
 function Register() {
   const [state, setState] = useState({
@@ -10,6 +11,18 @@ function Register() {
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      await axios.post("/api/register", {
+        name: state.name,
+        email: state.email,
+        password: state.password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="flex flex-col gap-2 justify-center items-center h-screen">
@@ -43,7 +56,9 @@ function Register() {
             onChange={handleChange}
           />
         </div>
-        <button type="submit">Register</button>
+        <button onClick={handleSubmit} type="submit">
+          Register
+        </button>
       </form>
     </div>
   );
