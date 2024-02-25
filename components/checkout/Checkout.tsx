@@ -34,20 +34,3 @@ function Checkout() {
 }
 
 export default Checkout;
-
-{
-  /* <Drawer
-variant="permanent"
-anchor="right"
-sx={{
-width: 300,
-flexShrink: 0,
-"& .MuiDrawer-paper": {
-    width: 300,
-    boxSizing: "border-box",
-},
-}}
->
-<div>Checkout</div>
-</Drawer> */
-}
