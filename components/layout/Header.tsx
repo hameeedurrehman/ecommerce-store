@@ -3,7 +3,8 @@ import Checkout from "@components/checkout/Checkout";
 import Image from "next/image";
 import Link from "next/link";
 
-const pages = ["Categories","Products", "About", "Contact", "Register"];
+const pages = ["Products", "Register"];
+// const pages = ["Categories","Products", "About", "Contact", "Register"];
 const settings = ["Profile", "Dashboard", "Logout"];
 
 function Header() {
@@ -13,7 +14,7 @@ function Header() {
         <div>
           <Link href={"/"}>
             <Image
-              src="/assets/images/logo.jpg"
+              src="/assets/logo.jpg"
               width={80}
               height={80}
               alt="logo"

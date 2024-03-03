@@ -2,6 +2,12 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
+import * as Yup from "yup";
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required(),
+  email: Yup.string().email().required(),
+  password: Yup.string().min(8).required(),
+});
 
 function Register() {
   const [state, setState] = useState({
@@ -9,25 +15,44 @@ function Register() {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
-  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post("/api/register", {
-        name: state.name,
+      await validationSchema.validate(state);
+      const res = await axios.post("/api/userExists", {
         email: state.email,
-        password: state.password,
       });
+      const { user } = res.data;
+      if (user) {
+        setError("User Exists");
+      } else {
+        await axios.post("/api/register", {
+          name: state.name,
+          email: state.email,
+          password: state.password,
+        });
+        setState({
+          name: "",
+          email: "",
+          password: "",
+        });
+      }
     } catch (error) {
-      console.log(error);
+      if (error instanceof Yup.ValidationError) {
+        setError(error.message);
+      } else {
+        console.log(error);
+      }
     }
   };
   return (
     <div className="flex flex-col gap-2 justify-center items-center h-screen">
       <h2 className="font-bold text-3xl">Register</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label>Name</label>
         <div>
           <TextField
@@ -56,10 +81,9 @@ function Register() {
             onChange={handleChange}
           />
         </div>
-        <button onClick={handleSubmit} type="submit">
-          Register
-        </button>
+        <button type="submit">Register</button>
       </form>
+      <div className="text-red-700 font-bold">{error && error}</div>
     </div>
   );
 }
