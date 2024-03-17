@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@components/layout/Header";
 import Footer from "@components/layout/Footer";
 import { cn } from "@lib/utils";
+import { Toaster } from "@components/ui/toaster";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
@@ -22,13 +23,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // <html lang="en">
-    //   <body className={inter.className}>
-    //     <Header />
-    //     {children}
-    //     <Footer />
-    //   </body>
-    // </html>
     <html lang="en" suppressHydrationWarning>
       <head />
       <body
@@ -39,6 +33,7 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        <Toaster />
         <Footer />
       </body>
     </html>

@@ -1,91 +1,109 @@
 "use client";
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import axios from "axios";
-import * as Yup from "yup";
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required(),
-  email: Yup.string().email().required(),
-  password: Yup.string().min(8).required(),
-});
+import { Button } from "@components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@components/ui/form";
+import { Input } from "@components/ui/input";
+import { toast } from "@components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-function Register() {
-  const [state, setState] = useState({
-    name: "",
-    email: "",
-    password: "",
+const FormSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  email: z.string().email(),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
+});
+export function Register() {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
-  const [error, setError] = useState("");
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, [e.target.name]: e.target.value });
-  };
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      await validationSchema.validate(state);
-      const res = await axios.post("/api/userExists", {
-        email: state.email,
-      });
-      const { user } = res.data;
-      if (user) {
-        setError("User Exists");
-      } else {
-        await axios.post("/api/register", {
-          name: state.name,
-          email: state.email,
-          password: state.password,
-        });
-        setState({
-          name: "",
-          email: "",
-          password: "",
-        });
-      }
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        setError(error.message);
-      } else {
-        console.log(error);
-      }
-    }
-  };
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  }
   return (
     <div className="flex flex-col gap-2 justify-center items-center h-screen">
-      <h2 className="font-bold text-3xl">Register</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <div>
-          <TextField
-            type="text"
+      <h2 className="font-bold text-2xl lg:text-4xl mb-12">Register Here</h2>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-2/3 space-y-6"
+        >
+          <FormField
+            control={form.control}
             name="name"
-            color="primary"
-            value={state.name}
-            onChange={handleChange}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your Name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This will be your public display name.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <label>Email</label>
-        <div>
-          <TextField
-            type="email"
+          <FormField
+            control={form.control}
             name="email"
-            value={state.email}
-            onChange={handleChange}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Your Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="abc@company.com" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This will be your public email address.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <label>Password</label>
-        <div>
-          <TextField
-            type="password"
+          <FormField
+            control={form.control}
             name="password"
-            value={state.password}
-            onChange={handleChange}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Your Password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>This will be your password.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-      <div className="text-red-700 font-bold">{error && error}</div>
+          <Button type="submit">Register</Button>
+        </form>
+      </Form>
     </div>
   );
 }
-
-export default Register;
